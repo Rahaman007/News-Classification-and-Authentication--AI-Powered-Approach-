@@ -3,7 +3,7 @@ import React, { useState } from "react";
 import { BeatLoader } from "react-spinners";
 
 const NewsData = (props) => {
-  const geminiAPIKey = "AIzaSyBoQyFY8mATOvs1JOIEX80-08AB0jtvNa8"; // Replace with your Gemini API key
+  const geminiAPIKey = "AIzaSyCiaHzDpsLw9XS8q0tcOJyi6BYSxTLfs9M"; // Replace with your Gemini API key
   const genAI = new GoogleGenerativeAI(geminiAPIKey);
 
   const [authenticity, setAuthenticity] = useState("");
