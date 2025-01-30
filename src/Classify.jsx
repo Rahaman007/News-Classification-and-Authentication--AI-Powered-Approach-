@@ -9,48 +9,38 @@ const Classify = () => {
   const newsAPIKey = "54ca9a87568d4f4cbf89e72e99f88f83"; // Replace with your News API key
 
   const [fetchedNews, setFetchedNews] = useState([]);
+  const [searchInput, setSearchInput] = useState("english");
 
   async function fetchNews() {
     // try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const prompt = `Give me 20 short news with word count of 20 to 30 words in bengali only without any other text, just with the actual news headline`;
+    const prompt = `Give me 20 short news with word count of 20 to 30 words in ${searchInput} only without any other text, just with the actual news headline`;
     const result = await model.generateContent(prompt);
 
-    console.log('********************result, result.candidates[0].content.parts[0]', result)
-    console.log('********************result.candidates[0].content.parts', result.candidates)
+    const dataResults = result.candidates[0].content.parts[0].split("\n");
+    setFetchedNews([...fetchedNews, dataResults]);
 
-    // const response = await fetch(
-    //   `https://newsapi.org/v2/top-headlines?country=us&apiKey=${newsAPIKey}`
-    // );
-    // return await response.json();
-    return result;
+    console.log(
+      "********************result, result.candidates[0].content.parts[0]",
+      result
+    );
+    return;
   }
 
   function loadMoreNews() {
-    fetchNews()
-      .then((response) =>
-        setFetchedNews([...response.articles, ...fetchedNews])
-      )
-      .catch((err) => alert(err));
+    fetchNews();
+    // .then((response) =>
+    //   setFetchedNews([...response.articles, ...fetchedNews])
+    // )
+    // .catch((err) => alert(err));
   }
 
   useEffect(() => {
-    fetchNews()
-      .then((response) => {
-
-        console.log('***********************response.candidates[0].content.parts[0]', response.candidates[0].content.parts)
-        setFetchedNews(response.articles);
-      })
-      .catch((err) => console.log("something failed miserably!", err));
-
-    const timeoutId = setTimeout(() => {
-      fetchNews().then((resp) => setFetchedNews([...fetchedNews, ...resp]));
-    }, 200000);
-
-    return () => clearTimeout(timeoutId);
+    fetchNews();
   });
 
-  console.log("*****************fetched news", fetchedNews);
+  // console.log("*****************fetched news", fetchedNews);
+  console.log("search innput", searchInput);
 
   return (
     <div>
@@ -61,6 +51,21 @@ const Classify = () => {
             <span>News classification App</span>
             <button className="load-more" onClick={() => loadMoreNews()}>
               Load More News
+            </button>
+          </div>
+          <div className="searchContainer">
+            <select onChange={(e) => setSearchInput(e.target.value)}>
+              <option value="english">English</option>
+              <option value="hindi">Hindi</option>
+              <option value="bengali">Bengali</option>
+            </select>
+            <button
+              onClick={async () => {
+                setFetchedNews([]);
+                await fetchNews();
+              }}
+            >
+              Search
             </button>
           </div>
           <div className="articles-container">
