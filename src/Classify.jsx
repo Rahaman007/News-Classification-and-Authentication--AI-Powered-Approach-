@@ -14,40 +14,26 @@ const Classify = () => {
   async function fetchNews() {
     // try {
     const model = genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
-    const prompt = `Give me 20 short news with word count of 20 to 30 words in ${searchInput} only without any other text, just with the actual news headline`;
+    const prompt = `Give me 20 short news with word count of 20 to 30 words in ${searchInput} only without any other text, just with the actual news headline without serial numbers`;
     const result = await model.generateContent(prompt);
-
-    const dataResults = result.candidates[0].content.parts[0].split("\n");
-    setFetchedNews([...fetchedNews, dataResults]);
-
-    console.log(
-      "********************result, result.candidates[0].content.parts[0]",
-      result
-    );
-    return;
+    const dataResults =
+      result.response.candidates[0].content.parts[0].text.split("\n");
+    setFetchedNews([...dataResults, ...fetchedNews]);
   }
 
   function loadMoreNews() {
     fetchNews();
-    // .then((response) =>
-    //   setFetchedNews([...response.articles, ...fetchedNews])
-    // )
-    // .catch((err) => alert(err));
   }
 
   useEffect(() => {
     fetchNews();
-  });
-
-  // console.log("*****************fetched news", fetchedNews);
-  console.log("search innput", searchInput);
+  }, []);
 
   return (
     <div>
       <div className="master-container">
         <div className="inner-container">
           <div className="inner-title">
-            {" "}
             <span>News classification App</span>
             <button className="load-more" onClick={() => loadMoreNews()}>
               Load More News
@@ -75,9 +61,10 @@ const Classify = () => {
               <div className="title">Authenticity</div>
             </div>
             <div className="articles-data">
-              {fetchedNews.map((article, index) => (
-                <NewsData key={index} article={article} />
-              ))}
+              {fetchedNews.map(
+                (article, index) =>
+                  article && <NewsData key={index} article={article} />
+              )}
             </div>
           </div>
         </div>
